@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Download, Share2, Trash2, RotateCcw, Eye, Clock, Calendar } from 'lucide-react';
@@ -9,7 +9,8 @@ import Badge from '../components/ui/Badge';
 import Modal from '../components/common/Modal';
 import { Loader } from '../components/common/Loader';
 import { useVideoStore } from '../stores/videoStore';
-import { VISUAL_STYLES } from '../config/visualStyles';
+import { VISUAL_STYLES, iconMap } from '../config/visualStyles';
+import api from '../services/api';
 
 export default function VideoView() {
     const { id } = useParams();
@@ -18,18 +19,82 @@ export default function VideoView() {
 
     const [showPrompt, setShowPrompt] = useState(false);
     const [deleteModal, setDeleteModal] = useState(false);
+    const [videoUrl, setVideoUrl] = useState(null);
+    const videoRef = useRef(null);
 
     useEffect(() => {
         if (id) {
             fetchVideoById(id);
         }
-        return () => clearCurrentVideo();
+        return () => {
+            clearCurrentVideo();
+            // Revoke the blob URL when component unmounts
+            if (videoUrl) {
+                URL.revokeObjectURL(videoUrl);
+            }
+        };
     }, [id, fetchVideoById, clearCurrentVideo]);
 
-    const handleDownload = () => {
-        if (currentVideo?.videoUrl) {
-            window.open(currentVideo.videoUrl, '_blank');
+    // Fetch video blob when currentVideo is loaded
+    useEffect(() => {
+        const fetchVideoBlob = async () => {
+            if (currentVideo?.backendStoryId && !videoUrl) {
+                try {
+                    const response = await api.get(`/api/stories/${currentVideo.backendStoryId}/video`, {
+                        responseType: 'blob'
+                    });
+                    const blob = response.data;
+                    const url = URL.createObjectURL(blob);
+                    setVideoUrl(url);
+                } catch (error) {
+                    console.error('Error fetching video:', error);
+                    toast.error('Failed to load video');
+                }
+            }
+        };
+
+        fetchVideoBlob();
+
+        // Cleanup function
+        return () => {
+            if (videoUrl) {
+                URL.revokeObjectURL(videoUrl);
+            }
+        };
+    }, [currentVideo]);
+
+    const handleDownload = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (!currentVideo?.backendStoryId) {
+            toast.error('Video not available');
+            return;
+        }
+
+        try {
+            toast.loading('Preparing download...');
+            
+            const response = await api.get(`/api/stories/${currentVideo.backendStoryId}/video`, {
+                responseType: 'blob'
+            });
+            
+            const blob = response.data;
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${currentVideo.title || 'video'}.mp4`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            toast.dismiss();
             toast.success('Download started!');
+        } catch (error) {
+            console.error('Error downloading video:', error);
+            toast.dismiss();
+            toast.error('Failed to download video');
         }
     };
 
@@ -117,13 +182,18 @@ export default function VideoView() {
                                         'aspect-video'
                                     }`}
                             >
-                                {currentVideo.videoUrl ? (
+                                {videoUrl ? (
                                     <video
-                                        src={currentVideo.videoUrl}
+                                        ref={videoRef}
+                                        src={videoUrl}
                                         controls
                                         autoPlay
                                         className="w-full h-full object-contain"
                                     />
+                                ) : currentVideo.status === 'completed' ? (
+                                    <div className="w-full h-full flex items-center justify-center text-white">
+                                        <Loader text="Loading video..." />
+                                    </div>
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-white">
                                         <p>Video processing...</p>
@@ -134,7 +204,7 @@ export default function VideoView() {
 
                         {/* Actions */}
                         <div className="flex flex-wrap gap-3 mt-4">
-                            <Button onClick={handleDownload} disabled={!currentVideo.videoUrl}>
+                            <Button onClick={handleDownload} disabled={!videoUrl}>
                                 <Download className="w-4 h-4 mr-2" />
                                 Download
                             </Button>
@@ -197,7 +267,13 @@ export default function VideoView() {
                                 <div className="flex justify-between text-sm">
                                     <span className="text-muted">Style</span>
                                     <span className="text-primary font-medium flex items-center gap-1">
-                                        {videoStyle?.icon} {videoStyle?.name || currentVideo.style}
+                                        {videoStyle?.icon && iconMap[videoStyle.icon] && (
+                                            (() => {
+                                                const IconComponent = iconMap[videoStyle.icon];
+                                                return <IconComponent className="w-4 h-4" />;
+                                            })()
+                                        )}
+                                        {videoStyle?.name || currentVideo.style}
                                     </span>
                                 </div>
                                 <div className="flex justify-between text-sm">

@@ -64,7 +64,6 @@ function App() {
           {/* Public routes with MainLayout */}
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
-            <Route path="/video/:id" element={<VideoView />} />
           </Route>
 
           {/* Auth routes (no layout) */}
@@ -95,6 +94,14 @@ function App() {
               element={
                 <AuthGuard>
                   <MyVideos />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/video/:id"
+              element={
+                <AuthGuard>
+                  <VideoView />
                 </AuthGuard>
               }
             />

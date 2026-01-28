@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, ChevronDown, Play, Youtube } from 'lucide-react';
+import { Vortex } from "../components/ui/vortex";
 import Card from '../components/ui/Card';
 import { useGenerationStore } from '../stores/generationStore';
 import { useAuthStore } from '../stores/authStore';
@@ -65,237 +66,246 @@ export default function Home() {
             </div>
 
             <div id="home" className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-24">
-                {/* Badge */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="flex justify-center mb-8"
+                <Vortex
+                    backgroundColor="transparent"
+                    rangeY={800}
+                    particleCount={500}
+                    baseHue={120}
+                    className="flex items-center flex-col justify-center -mt-8 px-2 md:px-10 py-4 w-full h-full"
+                    containerClassName="w-full h-auto"
                 >
-                    <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary border border-border text-sm text-muted">
-                        <Youtube className="w-4 h-4 text-red-500" />
-                        <ShinyText
-                            text="Your AI Video Starts Here"
-                            speed={3}
-                            delay={0}
-                            color="#0f0f0f"
-                            shineColor="#ffffff"
-                            spread={120}
-                            direction="left"
-                            yoyo={true}
-                            pauseOnHover={false}
-                            disabled={false}
-                        />
-                    </span>
-                </motion.div>
+                    {/* Badge */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                        className="flex justify-center mb-8"
+                    >
+                        <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary border border-border text-sm text-muted">
+                            <Youtube className="w-4 h-4 text-red-500" />
+                            <ShinyText
+                                text="Your AI Video Starts Here"
+                                speed={3}
+                                delay={0}
+                                color="#0f0f0f"
+                                shineColor="#ffffff"
+                                spread={120}
+                                direction="left"
+                                yoyo={true}
+                                pauseOnHover={false}
+                                disabled={false}
+                            />
+                        </span>
+                    </motion.div>
 
-                {/* Hero Heading */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.1 }}
-                    className="text-center mb-6"
-                >
-                    <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold text-primary leading-tight">
-                        Create Videos Instantly
-                        <br />
-                        with a <span className="text-muted">Single Prompt</span>
-                    </h1>
-                </motion.div>
+                    {/* Hero Heading */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.1 }}
+                        className="text-center mb-6"
+                    >
+                        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold text-primary leading-tight">
+                            Create Videos Instantly
+                            <br />
+                            with a <span className="text-muted">Single Prompt</span>
+                        </h1>
+                    </motion.div>
 
-                {/* Subtitle */}
-                <motion.p
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                    className="text-center text-muted max-w-2xl mx-auto mb-12"
-                >
-                    Type your idea, and our AI instantly turns it into a realistic video.
-                    Preview in real-time, customize styles, and export with a single click—
-                    perfect for creators, marketers, and teams.
-                </motion.p>
+                    {/* Subtitle */}
+                    <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                        className="text-center text-muted max-w-2xl mx-auto mb-12"
+                    >
+                        Type your idea, and our AI instantly turns it into a realistic video.
+                        Preview in real-time, customize styles, and export with a single click—
+                        perfect for creators, marketers, and teams.
+                    </motion.p>
 
-                {/* Prompt Input Bar */}
-                <motion.form
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.3 }}
-                    onSubmit={handleSubmit}
-                    className="max-w-3xl mx-auto mb-12"
-                >
-                    <div className="bg-white rounded-2xl border border-border shadow-lg p-4">
-                        <textarea
-                            value={prompt}
-                            onChange={(e) => setPrompt(e.target.value)}
-                            placeholder="Type your video idea here..."
-                            className="w-full h-24 bg-transparent text-primary placeholder:text-muted-light focus:outline-none focus:ring-0 resize-none text-lg"
-                        />
+                    {/* Prompt Input Bar */}
+                    <motion.form
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.3 }}
+                        onSubmit={handleSubmit}
+                        className="max-w-3xl mx-auto mb-12 w-full"
+                    >
+                        <div className="bg-white rounded-2xl border border-border shadow-lg p-4">
+                            <textarea
+                                value={prompt}
+                                onChange={(e) => setPrompt(e.target.value)}
+                                placeholder="Type your video idea here..."
+                                className="w-full h-24 bg-transparent text-primary placeholder:text-muted-light focus:outline-none focus:ring-0 resize-none text-lg"
+                            />
 
-                        <div className="flex items-center justify-between mt-2">
-                            <div className="flex items-center gap-2">
-                                {/* Ratio Dropdown */}
-                                <div className="relative">
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            setIsRatioOpen(!isRatioOpen);
-                                            setIsDurationOpen(false);
-                                            setIsStyleOpen(false);
-                                        }}
-                                        className="flex items-center gap-2 px-3 py-2 rounded-full border border-border text-sm font-medium text-muted hover:text-primary hover:bg-secondary transition-colors"
-                                    >
-                                        <span>{aspectRatio}</span>
-                                        <ChevronDown className={`w-4 h-4 transition-transform ${isRatioOpen ? 'rotate-180' : ''}`} />
-                                    </button>
-
-                                    {isRatioOpen && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            className="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl border border-border shadow-lg py-2 z-50"
+                            <div className="flex items-center justify-between mt-2">
+                                <div className="flex items-center gap-2">
+                                    {/* Ratio Dropdown */}
+                                    <div className="relative">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setIsRatioOpen(!isRatioOpen);
+                                                setIsDurationOpen(false);
+                                                setIsStyleOpen(false);
+                                            }}
+                                            className="flex items-center gap-2 px-3 py-2 rounded-full border border-border text-sm font-medium text-muted hover:text-primary hover:bg-secondary transition-colors"
                                         >
-                                            {ASPECT_RATIO_OPTIONS.map((opt) => (
-                                                <button
-                                                    key={opt.value}
-                                                    type="button"
-                                                    onClick={() => {
-                                                        setAspectRatio(opt.value);
-                                                        setIsRatioOpen(false);
-                                                    }}
-                                                    className={`w-full text-left px-4 py-2 text-sm hover:bg-secondary transition-colors ${aspectRatio === opt.value ? 'bg-secondary text-accent' : 'text-primary'
-                                                        }`}
-                                                >
-                                                    <span className="font-medium">{opt.label}</span>
-                                                    <span className="block text-xs text-muted">{opt.description}</span>
-                                                </button>
-                                            ))}
-                                        </motion.div>
-                                    )}
-                                </div>
+                                            <span>{aspectRatio}</span>
+                                            <ChevronDown className={`w-4 h-4 transition-transform ${isRatioOpen ? 'rotate-180' : ''}`} />
+                                        </button>
 
-                                {/* Duration Dropdown */}
-                                <div className="relative">
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            setIsDurationOpen(!isDurationOpen);
-                                            setIsRatioOpen(false);
-                                            setIsStyleOpen(false);
-                                        }}
-                                        className="flex items-center gap-2 px-3 py-2 rounded-full border border-border text-sm font-medium text-muted hover:text-primary hover:bg-secondary transition-colors"
-                                    >
-                                        <span>{duration}s</span>
-                                        <ChevronDown className={`w-4 h-4 transition-transform ${isDurationOpen ? 'rotate-180' : ''}`} />
-                                    </button>
-
-                                    {isDurationOpen && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            className="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl border border-border shadow-lg py-2 z-50"
-                                        >
-                                            {DURATION_OPTIONS.map((opt) => (
-                                                <button
-                                                    key={opt.value}
-                                                    type="button"
-                                                    onClick={() => {
-                                                        setDuration(opt.value);
-                                                        setIsDurationOpen(false);
-                                                    }}
-                                                    className={`w-full text-left px-4 py-2 text-sm hover:bg-secondary transition-colors ${duration === opt.value ? 'bg-secondary text-accent' : 'text-primary'
-                                                        }`}
-                                                >
-                                                    <span className="font-medium">{opt.label}</span>
-                                                    <span className="block text-xs text-muted">{opt.description}</span>
-                                                </button>
-                                            ))}
-                                        </motion.div>
-                                    )}
-                                </div>
-
-                                {/* Style Dropdown */}
-                                <div className="relative">
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            setIsStyleOpen(!isStyleOpen);
-                                            setIsRatioOpen(false);
-                                            setIsDurationOpen(false);
-                                        }}
-                                        className="flex items-center gap-2 px-3 py-2 rounded-full border border-border text-sm font-medium text-muted hover:text-primary hover:bg-secondary transition-colors"
-                                    >
-                                        {SelectedStyleIcon && <SelectedStyleIcon className="w-4 h-4" />}
-                                        <span>{selectedStyle?.name || 'Cinematic'}</span>
-                                        <ChevronDown className={`w-4 h-4 transition-transform ${isStyleOpen ? 'rotate-180' : ''}`} />
-                                    </button>
-
-                                    {isStyleOpen && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            className="absolute top-full left-0 mt-2 w-56 bg-white rounded-xl border border-border shadow-lg py-2 z-50"
-                                        >
-                                            {VISUAL_STYLES.map((s) => {
-                                                const StyleIcon = iconMap[s.icon];
-                                                return (
+                                        {isRatioOpen && (
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                className="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl border border-border shadow-lg py-2 z-50"
+                                            >
+                                                {ASPECT_RATIO_OPTIONS.map((opt) => (
                                                     <button
-                                                        key={s.id}
+                                                        key={opt.value}
                                                         type="button"
                                                         onClick={() => {
-                                                            setStyle(s.id);
-                                                            setIsStyleOpen(false);
+                                                            setAspectRatio(opt.value);
+                                                            setIsRatioOpen(false);
                                                         }}
-                                                        className={`w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-secondary transition-colors ${style === s.id ? 'bg-secondary text-accent' : 'text-primary'
+                                                        className={`w-full text-left px-4 py-2 text-sm hover:bg-secondary transition-colors ${aspectRatio === opt.value ? 'bg-secondary text-accent' : 'text-primary'
                                                             }`}
                                                     >
-                                                        {StyleIcon && <StyleIcon className="w-4 h-4" />}
-                                                        <span>{s.name}</span>
+                                                        <span className="font-medium">{opt.label}</span>
+                                                        <span className="block text-xs text-muted">{opt.description}</span>
                                                     </button>
-                                                );
-                                            })}
-                                        </motion.div>
-                                    )}
+                                                ))}
+                                            </motion.div>
+                                        )}
+                                    </div>
+
+                                    {/* Duration Dropdown */}
+                                    <div className="relative">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setIsDurationOpen(!isDurationOpen);
+                                                setIsRatioOpen(false);
+                                                setIsStyleOpen(false);
+                                            }}
+                                            className="flex items-center gap-2 px-3 py-2 rounded-full border border-border text-sm font-medium text-muted hover:text-primary hover:bg-secondary transition-colors"
+                                        >
+                                            <span>{duration}s</span>
+                                            <ChevronDown className={`w-4 h-4 transition-transform ${isDurationOpen ? 'rotate-180' : ''}`} />
+                                        </button>
+
+                                        {isDurationOpen && (
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                className="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl border border-border shadow-lg py-2 z-50"
+                                            >
+                                                {DURATION_OPTIONS.map((opt) => (
+                                                    <button
+                                                        key={opt.value}
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setDuration(opt.value);
+                                                            setIsDurationOpen(false);
+                                                        }}
+                                                        className={`w-full text-left px-4 py-2 text-sm hover:bg-secondary transition-colors ${duration === opt.value ? 'bg-secondary text-accent' : 'text-primary'
+                                                            }`}
+                                                    >
+                                                        <span className="font-medium">{opt.label}</span>
+                                                        <span className="block text-xs text-muted">{opt.description}</span>
+                                                    </button>
+                                                ))}
+                                            </motion.div>
+                                        )}
+                                    </div>
+
+                                    {/* Style Dropdown */}
+                                    <div className="relative">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setIsStyleOpen(!isStyleOpen);
+                                                setIsRatioOpen(false);
+                                                setIsDurationOpen(false);
+                                            }}
+                                            className="flex items-center gap-2 px-3 py-2 rounded-full border border-border text-sm font-medium text-muted hover:text-primary hover:bg-secondary transition-colors"
+                                        >
+                                            {SelectedStyleIcon && <SelectedStyleIcon className="w-4 h-4" />}
+                                            <span>{selectedStyle?.name || 'Cinematic'}</span>
+                                            <ChevronDown className={`w-4 h-4 transition-transform ${isStyleOpen ? 'rotate-180' : ''}`} />
+                                        </button>
+
+                                        {isStyleOpen && (
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                className="absolute top-full left-0 mt-2 w-56 bg-white rounded-xl border border-border shadow-lg py-2 z-50"
+                                            >
+                                                {VISUAL_STYLES.map((s) => {
+                                                    const StyleIcon = iconMap[s.icon];
+                                                    return (
+                                                        <button
+                                                            key={s.id}
+                                                            type="button"
+                                                            onClick={() => {
+                                                                setStyle(s.id);
+                                                                setIsStyleOpen(false);
+                                                            }}
+                                                            className={`w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-secondary transition-colors ${style === s.id ? 'bg-secondary text-accent' : 'text-primary'
+                                                                }`}
+                                                        >
+                                                            {StyleIcon && <StyleIcon className="w-4 h-4" />}
+                                                            <span>{s.name}</span>
+                                                        </button>
+                                                    );
+                                                })}
+                                            </motion.div>
+                                        )}
+                                    </div>
                                 </div>
+
+                                {/* Submit Button */}
+                                <button
+                                    type="submit"
+                                    disabled={!prompt.trim()}
+                                    className="p-3 rounded-full bg-primary text-white hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-lg hover:shadow-xl hover:scale-105 transform duration-200"
+                                >
+                                    <ArrowRight className="w-5 h-5" />
+                                </button>
                             </div>
-
-                            {/* Submit Button */}
-                            <button
-                                type="submit"
-                                disabled={!prompt.trim()}
-                                className="p-3 rounded-full bg-primary text-white hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-lg hover:shadow-xl hover:scale-105 transform duration-200"
-                            >
-                                <ArrowRight className="w-5 h-5" />
-                            </button>
                         </div>
-                    </div>
-                </motion.form>
+                    </motion.form>
 
-                {/* Quick Action Cards */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.4 }}
-                    className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto"
-                >
-                    {QUICK_ACTIONS.map((action) => {
-                        const IconComponent = iconMap[action.icon];
-                        return (
-                            <Card
-                                key={action.id}
-                                variant="interactive"
-                                padding="md"
-                                onClick={() => handleQuickAction(action)}
-                                className="flex flex-col justify-between min-h-[140px] hover:shadow-md cursor-pointer"
-                            >
-                                <div>
-                                    <h3 className="text-sm font-medium text-primary">{action.title}</h3>
-                                    <p className="text-xs text-muted">{action.subtitle}</p>
-                                </div>
-                                {IconComponent && <IconComponent className={`w-6 h-6 text-${action.color} mt-4`} strokeWidth={1.5} />}
-                            </Card>
-                        );
-                    })}
-                </motion.div>
+                    {/* Quick Action Cards */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.4 }}
+                        className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto w-full"
+                    >
+                        {QUICK_ACTIONS.map((action) => {
+                            const IconComponent = iconMap[action.icon];
+                            return (
+                                <Card
+                                    key={action.id}
+                                    variant="interactive"
+                                    padding="md"
+                                    onClick={() => handleQuickAction(action)}
+                                    className="flex flex-col justify-between min-h-[140px] hover:shadow-md cursor-pointer"
+                                >
+                                    <div>
+                                        <h3 className="text-sm font-medium text-primary">{action.title}</h3>
+                                        <p className="text-xs text-muted">{action.subtitle}</p>
+                                    </div>
+                                    {IconComponent && <IconComponent className={`w-6 h-6 text-${action.color} mt-4`} strokeWidth={1.5} />}
+                                </Card>
+                            );
+                        })}
+                    </motion.div>
+                </Vortex>
 
                 {/* Features Section */}
                 <motion.section

@@ -1,6 +1,9 @@
 @import url(https://db.onlinewebfonts.com/c/9942ef689f75a1a10278a0eedd9517fa?family=Touche+W03+Medium);
 @import url(https://db.onlinewebfonts.com/c/32839cd9b3232ea91d3bb0a41f04e1aa?family=Core+Magic+W00+2D+Double);
 @import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
 
 @theme {
     /* Custom Colors - Clean Modern Design */

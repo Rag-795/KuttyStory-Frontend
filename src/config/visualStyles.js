@@ -54,7 +54,7 @@ export const VISUAL_STYLES = [
         icon: 'Tv',
     },
     {
-        id: 'comic',
+        id: 'comic_book',
         name: 'Comic Book',
         description: 'Bold lines and pop art colors',
         icon: 'MessageSquare',

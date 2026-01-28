@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Check, Download, Share2, RotateCcw } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Download, Share2, RotateCcw, X, Mic, Film, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
@@ -28,7 +28,8 @@ export default function Create() {
         aspectRatio, setAspectRatio,
         status, progress, currentStage, stages,
         videoUrl, error,
-        startGeneration, resetGeneration,
+        scenes, currentSceneIndex, generationPhase,
+        startGeneration, resetGeneration, cancelGeneration,
     } = useGenerationStore();
 
     const [currentStep, setCurrentStep] = useState(0);
@@ -86,6 +87,16 @@ export default function Create() {
     const handleCreateAnother = () => {
         resetGeneration();
         setCurrentStep(0);
+    };
+
+    const handleCancel = async () => {
+        const cancelled = await cancelGeneration();
+        if (cancelled) {
+            toast.success('Generation cancelled');
+            setCurrentStep(2);
+        } else {
+            toast.error('Could not cancel generation');
+        }
     };
 
     return (
@@ -185,7 +196,7 @@ export default function Create() {
                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                                     {VISUAL_STYLES.map((s) => {
                                         const IconComponent = iconMap[s.icon];
-                                        
+
                                         return (
                                             <div
                                                 key={s.id}
@@ -287,18 +298,116 @@ export default function Create() {
 
                         {/* Step 4: Generating */}
                         {currentStep === 3 && (
-                            <Card padding="lg" className="text-center">
-                                <h2 className="text-xl font-semibold text-primary mb-2">Creating your video</h2>
-                                <p className="text-muted mb-8">Please wait while we work our magic...</p>
+                            <Card padding="lg">
+                                <div className="text-center mb-6">
+                                    <h2 className="text-xl font-semibold text-primary mb-2">Creating your video</h2>
+                                    <p className="text-muted">Please wait while we work our magic...</p>
+                                </div>
 
-                                <ProgressBar progress={progress} size="lg" className="mb-8" />
+                                <ProgressBar progress={progress} size="lg" className="mb-6" />
 
-                                <StageProgress stages={stages} currentStage={currentStage} />
+                                {/* Phase indicator */}
+                                <div className="text-center mb-6">
+                                    <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary text-sm font-medium text-primary">
+                                        {generationPhase === 'initializing' && 'Initializing story...'}
+                                        {generationPhase === 'generating_audio' && (
+                                            <><Mic className="w-4 h-4 text-accent" /> Generating audio narration...</>
+                                        )}
+                                        {generationPhase === 'generating_video' && (
+                                            <><Film className="w-4 h-4 text-accent" /> Generating video scenes...</>
+                                        )}
+                                        {generationPhase === 'composing' && 'Composing final video...'}
+                                    </span>
+                                </div>
+
+                                {/* Scene-level progress */}
+                                {scenes.length > 0 && (
+                                    <div className="space-y-3 max-h-64 overflow-y-auto">
+                                        {scenes.map((scene, index) => (
+                                            <div
+                                                key={scene.scene || index}
+                                                className={`p-4 rounded-xl border transition-all ${index === currentSceneIndex && status === 'generating'
+                                                    ? 'border-accent bg-accent/5'
+                                                    : 'border-border bg-secondary/30'
+                                                    }`}
+                                            >
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-sm font-medium text-primary">
+                                                            {scene.scene || index + 1}
+                                                        </span>
+                                                        <div className="text-left">
+                                                            <p className="text-sm font-medium text-primary truncate max-w-xs">
+                                                                {(typeof scene.visual_description === 'string' ? scene.visual_description : scene.narration || `Scene ${index + 1}`)?.slice(0, 50)}...
+                                                            </p>
+                                                            <p className="text-xs text-muted">
+                                                                {scene.duration}s duration
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        {/* Audio status */}
+                                                        {/* <div
+                                                            className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${scene.audio_path
+                                                                ? 'bg-success/10 text-success'
+                                                                : 'bg-secondary text-muted'
+                                                                }`}
+                                                        >
+                                                            <Mic className="w-3 h-3" />
+                                                            {scene.audio_path ? 'Done' : 'Pending'}
+                                                        </div> */}
+                                                        {/* Video status */}
+                                                        <div
+                                                            className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${scene.video_path
+                                                                ? 'bg-success/10 text-success'
+                                                                : scene.video_error
+                                                                    ? 'bg-error/10 text-error'
+                                                                    : 'bg-secondary text-muted'
+                                                                }`}
+                                                        >
+                                                            {scene.video_error ? (
+                                                                <AlertCircle className="w-3 h-3" />
+                                                            ) : (
+                                                                <Film className="w-3 h-3" />
+                                                            )}
+                                                            {scene.video_path ? 'Done' : scene.video_error ? 'Error' : 'Pending'}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {/* Show error message if any */}
+                                                {scene.video_error && (
+                                                    <p className="text-xs text-error mt-2 text-left">
+                                                        {scene.video_error}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* Fallback stage progress when no scenes yet */}
+                                {scenes.length === 0 && (
+                                    <StageProgress stages={stages} currentStage={currentStage} />
+                                )}
+
+                                {/* Cancel Button */}
+                                {status === 'generating' && !error && (
+                                    <div className="mt-8 text-center">
+                                        <Button
+                                            variant="ghost"
+                                            onClick={handleCancel}
+                                            className="text-muted hover:text-error"
+                                        >
+                                            <X className="w-4 h-4 mr-2" />
+                                            Cancel Generation
+                                        </Button>
+                                    </div>
+                                )}
 
                                 {error && (
-                                    <div className="mt-6 p-4 bg-error/10 rounded-xl">
+                                    <div className="mt-6 p-4 bg-error/10 rounded-xl text-center">
                                         <p className="text-error">{error}</p>
-                                        <Button variant="secondary" className="mt-4\" onClick={() => setCurrentStep(2)}>
+                                        <Button variant="secondary" className="mt-4" onClick={() => setCurrentStep(2)}>
                                             Try Again
                                         </Button>
                                     </div>

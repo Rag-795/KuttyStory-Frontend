@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, Filter, Grid, List, Film, MoreVertical, Trash2, Download, Share2 } from 'lucide-react';
+import { Search, Filter, Grid, List, Film, MoreVertical, Trash2, Download, Share2, AlertCircle } from 'lucide-react';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
@@ -22,7 +22,7 @@ const SORTS = [
 export default function MyVideos() {
     const navigate = useNavigate();
     const { user } = useAuthStore();
-    const { videos, isLoading, fetchVideos, deleteVideo } = useVideoStore();
+    const { videos, isLoading, fetchVideos, deleteVideo, error } = useVideoStore();
 
     const [searchQuery, setSearchQuery] = useState('');
     const [activeFilter, setActiveFilter] = useState('All');
@@ -32,7 +32,11 @@ export default function MyVideos() {
 
     useEffect(() => {
         if (user?.uid) {
-            fetchVideos(user.uid);
+            console.log('Fetching videos for user:', user.uid);
+            fetchVideos(user.uid).catch(err => {
+                console.error('Failed to fetch videos:', err);
+                toast.error('Failed to load videos');
+            });
         }
     }, [user?.uid, fetchVideos]);
 
@@ -176,6 +180,21 @@ export default function MyVideos() {
                     <div className="flex justify-center py-16">
                         <Loader size="lg" text="Loading your videos..." />
                     </div>
+                ) : error ? (
+                    <Card padding="lg" className="text-center">
+                        <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <AlertCircle className="w-8 h-8 text-error" />
+                        </div>
+                        <h3 className="font-semibold text-primary mb-2">
+                            Failed to load videos
+                        </h3>
+                        <p className="text-muted mb-4">
+                            {error}
+                        </p>
+                        <Button onClick={() => fetchVideos(user?.uid)}>
+                            Try Again
+                        </Button>
+                    </Card>
                 ) : filteredVideos.length > 0 ? (
                     <motion.div
                         initial={{ opacity: 0 }}

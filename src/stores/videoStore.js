@@ -15,10 +15,13 @@ export const useVideoStore = create((set, get) => ({
     fetchVideos: async (userId) => {
         set({ isLoading: true, error: null });
         try {
+            console.log('Fetching videos for user:', userId);
             const videos = await getUserVideos(userId);
+            console.log('Videos fetched:', videos);
             set({ videos, isLoading: false });
         } catch (error) {
-            set({ error: error.message, isLoading: false });
+            console.error('Error fetching videos:', error);
+            set({ error: error.message, isLoading: false, videos: [] });
             throw error;
         }
     },

@@ -5,8 +5,9 @@ const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
     headers: {
         'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true', // Required for ngrok free tier
     },
-    timeout: 30000, // 30 seconds
+    timeout: 300000, // 5 minutes - video generation takes time
 });
 
 // Request interceptor
@@ -48,6 +49,12 @@ export const listStories = () => api.get('/api/stories');
 export const createStory = (data) => api.post('/api/stories', data);
 
 export const getStory = (storyId) => api.get(`/api/stories/${storyId}`);
+
+// Cancel a running story generation
+export const cancelStory = (storyId) => api.delete(`/api/stories/${storyId}`);
+
+// Get the final video for a story
+export const getStoryVideo = (storyId) => api.get(`/api/stories/${storyId}/video`);
 
 // Polling helper for video generation
 export const pollStoryStatus = async (storyId, onProgress, interval = 2000) => {
