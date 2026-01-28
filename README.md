@@ -1,4 +1,4 @@
-# 🎬 Kutty Story
+<img src = "https://drive.google.com/thumbnail?id=1UGeB0U5Kk07IYfpWeC9M_Iz5z1Yz4QfI" />
 
 **AI-Powered Video Story Generator**
 
@@ -27,19 +27,11 @@ Kutty Story is a modern web application that transforms your creative ideas into
 - Personal video library (My Videos)
 - Video preview and playback
 - Download and share generated videos
-- Track video statistics and views
-
-### ⚙️ **User Settings**
-- Profile management with avatar support
-- Default preferences for quick video creation
-- Usage statistics dashboard
-- Account security controls
 
 ### 🎯 **Modern UI/UX**
 - Responsive design for all devices
 - Smooth animations with Framer Motion
 - Clean, minimalist interface
-- Dark mode optimized
 - Interactive components with Lucide icons
 
 ## 🛠️ Tech Stack
